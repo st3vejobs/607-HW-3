@@ -1,0 +1,108 @@
+---
+title: "Homework 3"
+author: "Shane Hylton"
+date: "9/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(openintro)
+```
+
+## Question 1
+
+
+```{r count-compare}
+link <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/college-majors/majors-list.csv"
+majors <- read.csv(url(link), na.strings = "")
+stat <- majors %>%
+  filter( grepl("STATISTICS", Major))
+data <- majors %>%
+  filter( grepl("DATA", Major))
+dstat <- rbind(data,stat)
+dstat
+```
+
+## Question 2
+
+This question is confusing. It seems that the goal is to take the text and copy it into a string and then manipulate that string until it reads as a string containing the chosen format.
+
+```{r}
+
+x <- '[1] "bell pepper"  "bilberry"   "blackberry"  "blood orange"
+[5] "blueberry"  "cantaloupe"   "chili pepper" "cloudberry"  
+[9] "elderberry"   "lime"         "lychee"       "mulberry"    
+[13] "olive"        "salal berry"'
+x <-unlist(str_extract_all(x, pattern = "\"([a-z]+.[a-z]+)\""))
+y <- str_remove_all(x, "\"")
+dput(as.character(y))
+
+#goal <- c("bell pepper" , "bilberry" , "blackberry" , "blood orange" , "blueberry" , "cantaloupe" , "chili pepper", "cloudberry" , "elderberry" , "lime" , "lychee" , "mulberry" , "olive" , "salal berry")
+
+
+```
+
+## Question 3
+```{r}
+test <- c('aaaglsdjgsdad', 'eleven', 'ataka', '"madamiamadam"', '"1235321"', '1111', '"ataka"', 'dddaf999', 'slsoooo', 'aa', 'aa\1', 'aa\1\1', 'x\1\1', '"x\1\1"', "x\1\1", 'x\\1\\1', 'y\2\2', 'xyyx', '"1221"', "abab", "1212", 'ab', 'aa\1', 'fffcccaaafff')
+```
+1.
+(.)\1\1: This expression will display matches with a character, a backslash, 1, another backslash, and another 1. x\1\1, a\1\1
+(.)\\1\\1: This expression will match sets of characters that occur three consecutive times. ..., aaa, 111
+
+2.
+"(.)(.)\\2\\1": This will backreference to sets of characters in the pattern of "1221", "abba", "!..!". The double quotes are needed around the set of characters because they are included in the expression.
+
+3.
+(..)\1: This will seek out a character or two characters followed by a single backslash, followed by a 1. 
+
+(..)\\1: This will take a set of two different (or same) characters, repeated. abab, bbbb, 1212
+
+4.
+(.).\\1.\\1: This will take a character that occurs three times with any character between each repetition. ababa, ataka, 12131
+
+"(.).\\1.\\1": This will take a character that occurs three times with any character between each repetition. Because the question is actually asking about the expression contained in double quotes, there must be double quotes around the string in order for the program to display anything. "ababa", "ataka", "12131"
+
+5.
+"(.)(.)(.).*\\3\\2\\1": This takes a sequence of characters that follows a palindrome-like pattern. It will find a sequence that starts in a pattern with any three characters, with anything in between, followed by the same three characters in reverse order. Same as before, the characters must be contained inside of double quotes because the expression contains double quotes.  "1234321", "abc43cba", "racecar", "madamiamadam"
+
+```{r}
+
+
+str_view(test, '(.)\1\1', match = TRUE)
+str_view(test, '(.)\\1\\1')
+str_view(test, '"(.)(.)\\2\\1"')
+str_view(test, '(..)\1')
+str_view(test, '(..)\\1')
+str_view(test, '(.).\\1.\\1')
+str_view(test, '"(.).\\1.\\1"')
+str_view(test, '"(.)(.)(.).*\\3\\2\\1"')
+
+```
+
+## Question 4
+
+Start and end with the same character:
+^ Matches the first character
+$ Matches the final character
+**Answer**: ^(.).*\\1$
+
+Contain a repeated pair of letters:
+(.) would call characters, ([a-z]) calls only letters
+**Answer**: ([a-z][a-z]).*\\1
+
+Contain one letter repeated in at least three places:
+**Answer**: ([a-z]).\*\\\1.\*\\\1
+
+
+
+```{r}
+
+str_view(test, '^(.).*\\1$')
+str_view(test, '([a-z][a-z]).*\\1')
+str_view(test, '([a-z]).*\\1.*\\1')
+```
+
+
